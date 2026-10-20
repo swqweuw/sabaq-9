@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Домашние задания{% endblock %}
+
+{% block content %}
+  <h1>Домашние задания</h1>
+
+  <form class="inline-form" method="post" action="{{ url_for('add_homework') }}">
+    <select name="subject_id" required>
+      {% for s in subjects %}
+        <option value="{{ s['id'] }}">{{ s['name'] }}</option>
+      {% endfor %}
+    </select>
+    <input type="text" name="text" placeholder="Что задали" required>
+    <input type="date" name="deadline" required>
+    <button type="submit">Добавить</button>
+  </form>
+
+  {% if items %}
+    {% for item in items %}
+      <article class="card card--row card--{{ item['css'] }}">
+        <div>
+          <h3>{{ item['hw']['subject'] }}</h3>
+          <p>{{ item['hw']['text'] }}</p>
+          <p class="muted">Сдать до {{ item['hw']['deadline']|ru_date }} · <strong>{{ item['status'] }}</strong></p>
+        </div>
+        {% if not item['hw']['done'] %}
+          <form method="post" action="{{ url_for('homework_done', hw_id=item['hw']['id']) }}">
+            <button type="submit">Готово</button>
+          </form>
+        {% endif %}
+      </article>
+    {% endfor %}
+  {% else %}
+    <p class="muted">Заданий пока нет.</p>
+  {% endif %}
+{% endblock %}

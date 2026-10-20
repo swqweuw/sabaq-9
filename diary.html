@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Оценки{% endblock %}
+
+{% block content %}
+  <h1>Мои оценки</h1>
+
+  <form class="inline-form" method="post" action="{{ url_for('add_grade') }}">
+    <select name="subject_id" required>
+      {% for row in rows %}
+        <option value="{{ row['subject']['id'] }}">{{ row['subject']['name'] }}</option>
+      {% endfor %}
+    </select>
+    <select name="value" required>
+      {% for v in [5, 4, 3, 2] %}
+        <option value="{{ v }}">{{ v }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Поставить оценку</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Предмет</th>
+          <th>Оценки</th>
+          <th>Средний балл</th>
+          <th>Итог за четверть</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row['subject']['name'] }}</td>
+            <td>
+              {% for g in row['grades'] %}<span class="grade grade--{{ g }}">{{ g }}</span>{% else %}<span class="muted">нет оценок</span>{% endfor %}
+            </td>
+            <td>{% if row['average'] is not none %}{{ '%.2f'|format(row['average']) }}{% else %}—{% endif %}</td>
+            <td>
+              {% if row['final'] is not none %}<span class="grade grade--{{ row['final'] }}">{{ row['final'] }}</span>{% else %}—{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
